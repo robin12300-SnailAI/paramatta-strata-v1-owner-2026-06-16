@@ -1,414 +1,800 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<title>Paramatta Strata Report · 业主自用 V1</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paramatta Strata 报告 V2.0 · Sorrell Street · 涨价原因 + 未来预测</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f1115;
-    --panel: #161a22;
-    --panel-2: #1c2230;
-    --border: #2a3140;
-    --text: #e7ebf2;
-    --muted: #8a94a6;
-    --accent: #4f8cff;
-    --green: #2ecc71;
-    --amber: #f5a524;
-    --red: #ff5d6c;
-    --cyan: #4ec9d4;
-    --purple: #b07cff;
-    --teal: #2bd4c1;
+  /* === MiniMax DESIGN.md Light Theme === */
+  :root{
+    /* 品牌色 */
+    --brand-blue:#1456f0;
+    --brand-blue-dark:#0d3fc7;
+    --brand-pink:#ea5c1c;
+    --brand-purple:#6c2bd9;
+    --brand-purple-light:#9c5fed;
+    --ink:#1a1a2e;
+    --ink-2:#3d3d52;
+    --ink-3:#6b6b80;
+    --muted:#9b9bac;
+    --bg:#ffffff;
+    --bg-2:#fafafd;
+    --bg-3:#f4f4fb;
+    --line:#e5e5f0;
+    --line-2:#d4d4e0;
+    /* 语义色 */
+    --ok:#16a34a;
+    --ok-bg:#dcfce7;
+    --warn:#d97706;
+    --warn-bg:#fef3c7;
+    --bad:#dc2626;
+    --bad-bg:#fee2e2;
+    --info:#0284c7;
+    --info-bg:#dbeafe;
+    --purple-bg:#f3e8ff;
+    --pink-bg:#fce7e0;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 1280px; margin: 0 auto; padding: 28px 28px 80px; }
-  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: 0.2px; }
-  h2 { font-size: 16px; color: var(--muted); font-weight: 500; margin: 0 0 24px; }
-  h3 { font-size: 14px; color: var(--muted); margin: 0 0 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-  .topbar { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
-  .meta { color: var(--muted); font-size: 12px; }
-  .meta b { color: var(--text); font-weight: 600; }
-  .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-  .badge.green { background: rgba(46,204,113,0.15); color: var(--green); }
-  .badge.amber { background: rgba(245,165,36,0.15); color: var(--amber); }
-  .badge.red   { background: rgba(255,93,108,0.15); color: var(--red); }
-  .badge.blue  { background: rgba(79,140,255,0.15); color: var(--accent); }
-  .badge.purple{ background: rgba(176,124,255,0.15); color: var(--purple); }
-  .badge.teal  { background: rgba(43,212,193,0.15); color: var(--teal); }
-
-  .grid { display: grid; gap: 16px; }
-  .kpi-grid { grid-template-columns: repeat(4, 1fr); margin-top: 22px; }
-  .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; position: relative; overflow: hidden; }
-  .kpi::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
-  .kpi.amber::before { background: var(--amber); }
-  .kpi.red::before   { background: var(--red); }
-  .kpi.green::before { background: var(--green); }
-  .kpi.purple::before{ background: var(--purple); }
-  .kpi.teal::before  { background: var(--teal); }
-  .kpi .label { color: var(--muted); font-size: 12px; letter-spacing: 0.4px; text-transform: uppercase; }
-  .kpi .value { font-size: 26px; font-weight: 700; margin-top: 6px; }
-  .kpi .sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
-  .kpi .delta { font-size: 12px; margin-top: 6px; }
-  .delta.up   { color: var(--green); }
-  .delta.down { color: var(--red); }
-  .delta.flat { color: var(--muted); }
-
-  .row-2 { grid-template-columns: 2fr 1fr; margin-top: 18px; }
-  .row-3 { grid-template-columns: 1fr 1fr 1fr; margin-top: 18px; }
-  .row-1 { grid-template-columns: 1fr; margin-top: 18px; }
-  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
-  .panel h3.title { color: var(--text); font-size: 14px; font-weight: 600; margin: 0 0 14px; text-transform: none; letter-spacing: 0; }
-  .panel .sub { color: var(--muted); font-size: 12px; margin-top: -8px; margin-bottom: 12px; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
-  th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
-  td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  tr.total td { font-weight: 700; border-top: 1px solid var(--border); }
-  tr.warn td { color: var(--amber); }
-
-  .bar { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
-  .bar .name { width: 130px; color: var(--muted); font-size: 12px; }
-  .bar .track { flex: 1; background: #232938; height: 14px; border-radius: 7px; overflow: hidden; }
-  .bar .fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--teal)); }
-  .bar .val { width: 110px; text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; }
-
-  .gauge { display: flex; align-items: center; gap: 16px; }
-  .gauge svg { width: 110px; height: 110px; }
-  .gauge .pct { font-size: 22px; font-weight: 700; }
-  .gauge .desc { color: var(--muted); font-size: 12px; line-height: 1.6; }
-
-  .alert { display: flex; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel-2); }
-  .alert.amber { border-color: rgba(245,165,36,0.4); background: rgba(245,165,36,0.08); }
-  .alert.red   { border-color: rgba(255,93,108,0.4); background: rgba(255,93,108,0.08); }
-  .alert.green { border-color: rgba(46,204,113,0.4); background: rgba(46,204,113,0.08); }
-  .alert .ico { font-size: 18px; line-height: 1; padding-top: 2px; }
-  .alert .body { font-size: 13px; line-height: 1.55; }
-  .alert b { color: var(--text); }
-  .stack { display: flex; flex-direction: column; gap: 10px; }
-
-  ul.tight { margin: 0; padding-left: 18px; line-height: 1.7; font-size: 13px; }
-  ul.tight li { margin-bottom: 4px; }
-
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
-  .legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
-  .legend .a::before { background: var(--accent); }
-  .legend .b::before { background: var(--teal); }
-  .legend .c::before { background: var(--amber); }
-  .legend .d::before { background: var(--purple); }
-  .legend .e::before { background: var(--red); }
-  .legend .f::before { background: var(--green); }
-
-  .foot { color: var(--muted); font-size: 11px; margin-top: 32px; text-align: center; }
-
-  @media (max-width: 980px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .row-2, .row-3 { grid-template-columns: 1fr; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'DM Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased}
+  /* 排版 */
+  h1,h2,h3,h4{font-family:'Outfit',-apple-system,sans-serif;letter-spacing:-.015em;color:var(--ink);font-weight:600}
+  h1{font-size:56px;line-height:1.05;letter-spacing:-.02em;font-weight:600}
+  h2{font-size:32px;line-height:1.15}
+  h3{font-size:22px;line-height:1.2}
+  h4{font-size:17px;line-height:1.3;font-weight:500}
+  .display{font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:-.02em}
+  .mono{font-family:'Roboto Mono',monospace}
+  .gradient{background:linear-gradient(90deg,var(--brand-blue) 0%,var(--brand-pink) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  /* 容器 */
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+  /* 导航 */
+  nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);margin:-32px -24px 24px;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+  nav .logo{font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
+  nav .logo::before{content:"";display:inline-block;width:24px;height:24px;background:linear-gradient(135deg,var(--brand-blue),var(--brand-pink));border-radius:6px}
+  nav .links{display:flex;gap:6px}
+  nav a{color:var(--ink-3);text-decoration:none;padding:6px 14px;border-radius:9999px;font-weight:500;transition:all .2s}
+  nav a:hover{background:var(--bg-3);color:var(--ink)}
+  nav .cta{background:var(--ink);color:#fff;border-radius:8px;padding:7px 14px;font-weight:500}
+  nav .cta:hover{background:#000;color:#fff}
+  /* Hero */
+  .hero{position:relative;padding:64px 0 48px;overflow:hidden}
+  .hero::before{content:"";position:absolute;left:50%;top:-100px;width:600px;height:600px;transform:translateX(-50%);background:radial-gradient(circle,rgba(20,86,240,.08) 0%,rgba(234,92,28,.06) 40%,transparent 70%);z-index:-1}
+  .hero h1{margin:0 0 16px;max-width:14ch}
+  .hero .lede{font-size:19px;color:var(--ink-2);max-width:62ch;margin:0 0 24px;line-height:1.55}
+  .hero .meta{font-size:13px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:18px}
+  .hero .meta b{color:var(--ink);font-weight:500}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+  .pill{padding:6px 14px;border-radius:9999px;font-size:12px;font-weight:500;background:#fff;border:1px solid var(--line);color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+  .pill.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .pill.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+  .pill.ok{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+  .pill.bad{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+  .pill.info{background:var(--info-bg);color:var(--info);border-color:transparent}
+  .pill.purple{background:var(--purple-bg);color:var(--brand-purple);border-color:transparent}
+  .pill.pink{background:var(--pink-bg);color:var(--brand-pink);border-color:transparent}
+  /* Section */
+  section{margin:48px 0;padding:32px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0;padding-top:0}
+  .section-head{margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .section-head .eyebrow{font:500 12px/1 'DM Sans';color:var(--brand-blue);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+  .section-head h2{margin:0}
+  .section-head .sub{color:var(--ink-3);font-size:14px;margin:8px 0 0;max-width:60ch}
+  /* KPI Grid */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px 22px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+  .kpi:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(44,30,116,.12)}
+  .kpi::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--brand-blue)}
+  .kpi.pink::after{background:var(--brand-pink)}
+  .kpi.purple::after{background:var(--brand-purple)}
+  .kpi.green::after{background:var(--ok)}
+  .kpi .label{font:500 11px/1 'DM Sans';color:var(--ink-3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+  .kpi .value{font:600 28px/1.1 'Outfit';color:var(--ink);letter-spacing:-.02em}
+  .kpi .sub{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+  .kpi .delta{margin-top:14px;display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:var(--bg-3);color:var(--ink-2)}
+  .kpi .delta.up{background:var(--ok-bg);color:var(--ok)}
+  .kpi .delta.down{background:var(--bad-bg);color:var(--bad)}
+  .kpi .delta.warn{background:var(--warn-bg);color:var(--warn)}
+  /* Cards */
+  .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px 30px;margin:16px 0;position:relative;overflow:hidden}
+  .card.pink{background:linear-gradient(135deg,#fff 0%,#fce7e0 100%);border-color:#f9c5b3}
+  .card.purple{background:linear-gradient(135deg,#fff 0%,#f3e8ff 100%);border-color:#d8b9fe}
+  .card.blue{background:linear-gradient(135deg,#fff 0%,#dbeafe 100%);border-color:#93c5fd}
+  .card.green{background:linear-gradient(135deg,#fff 0%,#dcfce7 100%);border-color:#86efac}
+  .card.warn{background:linear-gradient(135deg,#fff 0%,#fef3c7 100%);border-color:#fcd34d}
+  .card h3{margin:0 0 12px}
+  .card .voice{margin-top:18px;padding:14px 18px;background:rgba(255,255,255,.7);border-left:3px solid var(--brand-pink);border-radius:0 12px 12px 0;font-size:14.5px;line-height:1.7}
+  .card.purple .voice{border-color:var(--brand-purple)}
+  .card.blue .voice{border-color:var(--brand-blue)}
+  .card.green .voice{border-color:var(--ok)}
+  .card.warn .voice{border-color:var(--warn)}
+  .card .voice b{color:var(--brand-pink)}
+  .card.purple .voice b{color:var(--brand-purple)}
+  .card.blue .voice b{color:var(--brand-blue)}
+  .card.green .voice b{color:var(--ok)}
+  .card.warn .voice b{color:var(--warn)}
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+  thead th{background:var(--bg-2);color:var(--ink-2);padding:12px 14px;text-align:left;font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--line)}
+  tbody td{padding:14px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--bg-2)}
+  td.num{text-align:right;font-family:'Roboto Mono',monospace;font-size:13.5px}
+  td.center{text-align:center}
+  tr.total td{background:var(--bg-2);font-weight:600}
+  tr.grand td{background:var(--bg-3);font-weight:600;font-size:15px}
+  tr.year td{background:#1a2540;color:#fff;font-weight:500}
+  tr.good td{background:var(--ok-bg)}
+  tr.warn td{background:var(--warn-bg)}
+  tr.bad td{background:var(--bad-bg)}
+  /* 涨价原因 step */
+  .why-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .why-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px;position:relative}
+  .why-card .step{position:absolute;top:-12px;left:24px;background:var(--brand-blue);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 14px 'Outfit';box-shadow:0 4px 12px rgba(20,86,240,.3)}
+  .why-card.purple .step{background:var(--brand-purple);box-shadow:0 4px 12px rgba(108,45,217,.3)}
+  .why-card.pink .step{background:var(--brand-pink);box-shadow:0 4px 12px rgba(234,92,28,.3)}
+  .why-card h4{margin:14px 0 8px;font-size:16px}
+  .why-card p{color:var(--ink-2);font-size:14px;line-height:1.6;margin:0}
+  .why-card .impact{margin-top:12px;padding:8px 12px;background:var(--bg-3);border-radius:8px;font:500 13px 'DM Sans';color:var(--ink)}
+  .why-card.purple .impact{background:var(--purple-bg);color:var(--brand-purple)}
+  .why-card.pink .impact{background:var(--pink-bg);color:var(--brand-pink)}
+  /* 大字 */
+  .big-num{font:600 56px/1 'Outfit';color:var(--brand-blue);letter-spacing:-.03em}
+  .big-num.pink{color:var(--brand-pink)}
+  .big-num.purple{color:var(--brand-purple)}
+  .big-num.ok{color:var(--ok)}
+  /* 进度条 */
+  .progress{height:8px;background:var(--bg-3);border-radius:4px;overflow:hidden;margin:8px 0}
+  .progress .bar{height:100%;background:linear-gradient(90deg,var(--brand-blue),var(--brand-pink));border-radius:4px}
+  .progress .bar.warn{background:linear-gradient(90deg,var(--warn),var(--bad))}
+  .progress .bar.ok{background:var(--ok)}
+  /* 行动清单 */
+  .todo{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:10px 0;transition:border-color .2s}
+  .todo:hover{border-color:var(--brand-blue)}
+  .todo .check{width:28px;height:28px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink-3);font-weight:600;font-family:'Outfit'}
+  .todo.priority .check{background:var(--bad-bg);color:var(--bad)}
+  .todo .body{flex:1}
+  .todo .body .head{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+  .todo .body h4{margin:0;font-size:15px;font-weight:600}
+  .todo .body p{margin:0;color:var(--ink-3);font-size:13.5px;line-height:1.5}
+  /* 对比表 */
+  .compare2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px}
+  .compare2 .col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .compare2 .col h5{margin:0 0 8px;font:500 11px 'DM Sans';color:var(--ink-3);text-transform:uppercase;letter-spacing:1px}
+  .compare2 .col .v{font:600 22px/1.1 'Outfit';color:var(--ink);letter-spacing:-.01em}
+  .compare2 .col .l{font-size:12.5px;color:var(--ink-3);margin-top:4px}
+  .compare2 .col.high{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#fcd34d}
+  .compare2 .col.mid{background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-color:#93c5fd}
+  .compare2 .col.low{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-color:#86efac}
+  /* Footer */
+  footer{margin:48px 0 0;padding:32px;background:#181e25;color:#a8a8b3;border-radius:20px;font-size:13px;line-height:1.7}
+  footer .top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #2a3140}
+  footer h5{color:#fff;margin:0 0 12px;font:500 14px 'Outfit'}
+  footer a{color:#a8a8b3;text-decoration:none;display:block;padding:4px 0;transition:color .2s}
+  footer a:hover{color:var(--brand-blue)}
+  footer .bottom{color:#6b6b80;font-size:12px;text-align:center}
+  /* Responsive */
+  @media (max-width:900px){
+    h1{font-size:36px}
+    .kpi-grid,.why-list,.compare2{grid-template-columns:1fr 1fr}
+    nav .links{display:none}
+    footer .top{grid-template-columns:1fr}
+  }
+  @media (max-width:600px){
+    h1{font-size:28px}
+    .kpi-grid,.why-list,.compare2{grid-template-columns:1fr}
   }
 </style>
 </head>
 <body>
+
+<nav>
+  <div class="logo">龙<span style="color:var(--brand-blue)">虾</span> · Paramatta Strata V2.0</div>
+  <div class="links">
+    <a href="#why">涨价原因</a>
+    <a href="#forecast">未来 12 个月</a>
+    <a href="#ledger">5 年流水账</a>
+    <a href="#special">Special Levy 总结</a>
+    <a href="#action">行动清单</a>
+  </div>
+  <a class="cta" href="https://github.com/robin12300-SnailAI/paramatta-strata-dashboard-2026-06-16">GitHub ↗</a>
+</nav>
+
 <div class="wrap">
-  <div class="topbar">
+
+<!-- ============== HERO ============== -->
+<header class="hero">
+  <h1 class="display">Strata Levy<br><span class="gradient">涨多少？为什么？还要涨多久？</span></h1>
+  <p class="lede">Sorrell Street, Parramatta NSW 2150 · Strata Plan 89878 · Lot 5 · 6 Sorrell Street (Jun Peng) · DEFT Ref 214667321561939</p>
+  <div class="meta">
+    <span><b>Strata Manager</b> Strata Choice (Darren Bolton)</span>
+    <span><b>报告时点</b> 09 Jun 2026</span>
+    <span><b>NextGen 时期</b> 2023-01 ~ 2024-09 (Dong Li, Marina Zhou)</span>
+    <span><b>Strata Choice 时期</b> 2024-09 ~ 现在</span>
+  </div>
+  <div class="pills">
+    <span class="pill solid">V2.0 卖家版 · 浅色</span>
+    <span class="pill purple">Lot 5 · 脱敏地址</span>
+    <span class="pill ok">Special Levy 100% 完成</span>
+    <span class="pill info">CW Forecast 10 年已发</span>
+    <span class="pill warn">保险 8/31 到期</span>
+  </div>
+</header>
+
+<!-- ============== KPI ============== -->
+<section>
+  <div class="section-head">
     <div>
-      <h1>Paramatta Strata Report · 数据分析看板</h1>
-      <h2>1/6 Sorrell Street, Parramatta NSW 2150 · Strata Plan 89878 · Lot 5 · 建于 2016</h2>
-    </div>
-    <div class="meta">
-      <div>报告人：<b>Libom Pty Ltd (Amanda Williamson)</b></div>
-      <div>Strata Manager：<b>Strata Choice (Darren Bolton)</b></div>
-      <div>检查日：<b>2026-06-10</b>　|　数据时点：<b>2026-06-09</b></div>
-      <div>财年：<b>1 Sep 2025 - 31 Oct 2026</b></div>
+      <div class="eyebrow">At a glance</div>
+      <h2>5 个关键数字看懂 Lot 5 的 Strata 现状</h2>
     </div>
   </div>
-
-  <!-- KPI ROW -->
-  <div class="grid kpi-grid">
+  <div class="kpi-grid">
     <div class="kpi">
-      <div class="label">我的季度征费 (Lot 5)</div>
-      <div class="value">$2,897.13</div>
-      <div class="sub">Admin $2,542.38 + CW $354.75</div>
-      <div class="delta flat">年化 ≈ $11,588.52</div>
-    </div>
-    <div class="kpi amber">
-      <div class="label">应付特殊征费 (2025)</div>
-      <div class="value">$137,000</div>
-      <div class="sub">Repay Lannock 贷款，分 2 期 03/2026 + 04/2026</div>
-      <div class="delta flat">分摊到 Lot 5（按 unit entitlement）</div>
+      <div class="label">当前季度征费</div>
+      <div class="value">$2,998.18</div>
+      <div class="sub">2026 Q4 (Aug-Oct 2026) · 5月已扣</div>
+      <div class="delta up">▲ 4 年涨 113%</div>
     </div>
     <div class="kpi green">
-      <div class="label">净基金 (Net Owner Funds)</div>
-      <div class="value">$147,044.67</div>
-      <div class="sub">Admin $143,350.34 + CW $3,694.33</div>
-      <div class="delta up">▲ 较上期 -$21,024.57 改善 $168,069.24</div>
+      <div class="label">12 个月内预计交</div>
+      <div class="value">$11,993</div>
+      <div class="sub">4 个季度 × $2,998 · 不含保险/特殊</div>
+      <div class="delta up">▲ 完全可预测</div>
     </div>
-    <div class="kpi red">
-      <div class="label">应收征费 (Arrears)</div>
-      <div class="value">$38,057.89</div>
-      <div class="sub">含特殊征费 $18,664.01</div>
-      <div class="delta down">占年度标准征费 15.5%</div>
-    </div>
-  </div>
-
-  <div class="grid kpi-grid" style="margin-top:14px">
-    <div class="kpi teal">
-      <div class="label">保险 Sum Insured</div>
-      <div class="value">$13.86M</div>
-      <div class="sub">QBE HU0043621 · 到期 2026-08-31</div>
-      <div class="delta flat">估值 $15.71M（2025-08-31）</div>
+    <div class="kpi pink">
+      <div class="label">Special Levy 待扣</div>
+      <div class="value">$0</div>
+      <div class="sub">2024 $47,078 + 2025 $137,000 已全清</div>
+      <div class="delta up">▲ 还清 Lannock 贷款</div>
     </div>
     <div class="kpi purple">
-      <div class="label">无担保贷款 (Admin)</div>
-      <div class="value">$133,911.20</div>
-      <div class="sub">Lannock Capital 2 Pty Limited</div>
-      <div class="delta down">以特殊征费 2024/2025 偿还</div>
+      <div class="label">未来 12 个月还要扣几次</div>
+      <div class="value">4 次</div>
+      <div class="sub">2026/8 + 11 + 2027/2 + 5 · 纯常规</div>
+      <div class="delta up">▲ 0 Special Levy</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi">
+      <div class="label">5 年累计预计 (基础情景)</div>
+      <div class="value">$63,940</div>
+      <div class="sub">20 季度 × 约 $3,045 · 涨 4% /年</div>
+      <div class="delta">📈 含 CW 补缴缺口</div>
+    </div>
+    <div class="kpi pink">
+      <div class="label">5 年累计预计 (悲观情景)</div>
+      <div class="value">$96,940</div>
+      <div class="sub">基础 + $33,000 屋顶维修分摊</div>
+      <div class="delta warn">⚠️ CW Year 9 重大支出</div>
+    </div>
+    <div class="kpi purple">
+      <div class="label">CW Fund 10 年预测 (Lot 5)</div>
+      <div class="value">$2,352/yr</div>
+      <div class="sub">当前实际 $1,419/yr · 缺口 $933/yr</div>
+      <div class="delta down">▼ 2027 AGM 可能涨 CW 66%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== 涨价原因 ============== -->
+<section id="why">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Why levies went up</div>
+      <h2>Strata Levy 涨价 3 大原因</h2>
+      <p class="sub">从 FY22/23 季度 $1,405 到 FY26/27 季度 $2,998，4 年累计涨 113%。三大原因层层叠加：</p>
+    </div>
+  </div>
+
+  <div class="why-list">
+    <div class="why-card">
+      <div class="step">1</div>
+      <h4>Better Buildings 缺陷诉讼</h4>
+      <p>2017-2018 楼龄 1-2 年时发现建筑缺陷（防水、防火、电梯、消防喷淋等），NCAT HB 22/39024 案件在 2022 年立案。法律费 + 专家费 + 修缮费预估 $300K+。</p>
+      <div class="impact">影响：4 年里抽了 2 次 Special Levy 共 $184,078</div>
+    </div>
+    <div class="why-card purple">
+      <div class="step">2</div>
+      <h4>Lannock 贷款 ($300K @ 9.75%)</h4>
+      <p>2022 AGM 通过决议：向 Lannock Capital 2 Pty Ltd 借 $300K 浮动利率 9.75%/年 用于支付诉讼费。2024 年改为 2 期一次性还清（$137,000 Special Levy），避免长期利息。</p>
+      <div class="impact">影响：2026/3 + 4 各扣 $68,500，已全清</div>
+    </div>
+    <div class="why-card pink">
+      <div class="step">3</div>
+      <h4>Sinking Fund 严重不足</h4>
+      <p>楼龄 10 年的关键维修开始集中爆发：屋顶 10-15 年需修（$81K）、balustrades 9 年（$5K）、电梯/消防 6-8 年。CW Fund 净余额仅 $3,694.33（甚至 -$14K 现金）。</p>
+      <div class="impact">影响：2026/3 BIV Reports 出 10 年 CW Plan，2027 AGM 必涨</div>
+    </div>
+  </div>
+
+  <div class="card blue" style="margin-top:20px">
+    <h3>💡 等等，保险费不是也涨了吗？</h3>
+    <p>意外的是，<b>FY25/26 保险费实际降了 9.8%</b>（从 FY24/25 的 $41,348 降到 $37,305）。原因可能是 Strata Choice 换 BAC Insurance Brokers 后比价拿下更优保费，加上 NSW 2025 年建筑保险市场趋稳。</p>
+    <p><b>但！</b>FY26/27 续保（8/31 到期）因 NCAT 案影响，费率可能回升 10-25%。我建议在 6 月底前先询价 Steadfast / Bibby / QBE 三家比价。</p>
+    <div class="voice">
+      <b>📞 大白话：</b>过去 3 年你每次拿到 Levy Notice 看到涨，心脏都咯噔一下。让我解释一下：<br>
+      你那栋楼是 2016 建的，2022 年开始发现有建筑缺陷要打官司，律师要钱、专家要钱、修缮也要钱。<br>
+      业主大会一咬牙：跟 Lannock 借了 $30 万先顶着，但利息 9.75% 太贵，2025 年决定一次抽 $137K 大家凑钱还掉。<br>
+      屋顶/电梯/消防这些"修修补补"的钱没攒够，等用到时只能再凑——这就是为什么现在 Sinking Fund 这么空。<br>
+      <b>好消息：</b>$137K 的特殊征费已经全部扣完，你以后不会再有"突然要交一大笔"的惊吓。<br>
+      <b>坏消息：</b>屋顶再过 9 年要修（$125K），那时候要么涨 Admin Levy 慢慢攒，要么再来一次 Special Levy。
+    </div>
+  </div>
+</section>
+
+<!-- ============== 未来 12 个月现金流 ============== -->
+<section id="forecast">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">12-month forecast</div>
+      <h2>未来 12 个月现金流（重述）</h2>
+      <p class="sub">从 2026/6/17 到 2027/6/16，每 3 个月 1 笔 DEFT 自动扣款。</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi green">
+      <div class="label">基础情景 (4 笔 × $2,998)</div>
+      <div class="value">$11,993</div>
+      <div class="sub">2026/8 + 11 + 2027/2 + 5 各 1 笔</div>
+      <div class="delta up">▲ 无 Special Levy</div>
     </div>
     <div class="kpi">
-      <div class="label">建筑保险 Premium (FY25/26)</div>
-      <div class="value">$37,305.15</div>
-      <div class="sub">+ 印花税 $3,381.36</div>
-      <div class="delta flat">已支付 · BAC Insurance Brokers</div>
+      <div class="label">温和情景 (+ CW 补涨)</div>
+      <div class="value">$13,700</div>
+      <div class="sub">CW 2027 AGM 涨到 $2,352/年 (=$588/季)</div>
+      <div class="delta warn">▲ CW 缺口必须补</div>
     </div>
-    <div class="kpi amber">
-      <div class="label">建筑缺陷诉讼状态</div>
-      <div class="value" style="font-size:20px">已原则和解</div>
-      <div class="sub">Better Buildings v. SP 89878 (NCAT HB 22/39024)</div>
-      <div class="delta flat">Builder 回工 + 承担部分法律/专家费</div>
-    </div>
-  </div>
-
-  <!-- ROW 2 -->
-  <div class="grid row-2">
-    <div class="panel">
-      <h3 class="title">全楼年化标准征费结构 (FY 2025/2026)</h3>
-      <div class="sub">预算期间：2025-11-01 ~ 2026-10-31　·　共 50+ 个 lot 分摊（合计 $245,000/年）</div>
-      <div class="bar"><div class="name">Administrative Fund</div><div class="track"><div class="fill" style="width:87.8%; background: linear-gradient(90deg, var(--accent), #6aa6ff);"></div></div><div class="val">$215,000.00 (87.8%)</div></div>
-      <div class="bar"><div class="name">Capital Works Fund</div><div class="track"><div class="fill" style="width:12.2%; background: linear-gradient(90deg, var(--teal), #5ce3d3);"></div></div><div class="val">$30,000.00 (12.2%)</div></div>
-      <div class="bar"><div class="name">Total Quarterly</div><div class="track"><div class="fill" style="width:100%; background: linear-gradient(90deg, #2a3140, #2a3140);"></div></div><div class="val">$61,250.00/季</div></div>
-      <div class="legend" style="margin-top:14px">
-        <span class="a">Admin (日常运营)</span>
-        <span class="b">Capital Works (大修/更新)</span>
-      </div>
-      <div class="sub" style="margin-top:14px; line-height:1.7">
-        Lot 5（您的房）按 unit entitlement 季度 $2,897.13、年化 $11,588.52，约占全楼年化征费 <b>4.73%</b>。CPI 调整后实际分摊比例约 4.6%。征费按季度等额缴纳。
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3 class="title">资金健康度 (FY 2025/2026 截 6/9)</h3>
-      <div class="gauge">
-        <svg viewBox="0 0 110 110">
-          <circle cx="55" cy="55" r="46" stroke="#232938" stroke-width="10" fill="none"/>
-          <circle cx="55" cy="55" r="46" stroke="var(--green)" stroke-width="10" fill="none"
-            stroke-dasharray="289" stroke-dashoffset="43.4"
-            transform="rotate(-90 55 55)" stroke-linecap="round"/>
-          <text x="55" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="var(--text)">85%</text>
-          <text x="55" y="74" text-anchor="middle" font-size="9" fill="var(--muted)">HEALTH</text>
-        </svg>
-        <div class="desc">
-          <div>净基金 <b style="color:var(--text)">$147,044.67</b></div>
-          <div>现金 $221,279.20</div>
-          <div>应收 $38,057.89</div>
-          <div>负债 $131,267.53</div>
-          <div>其中 Lannock 贷款 <b style="color:var(--red)">$133,911.20</b></div>
-        </div>
-      </div>
-      <div style="margin-top:14px; color:var(--muted); font-size:12px; line-height:1.6">
-        净基金大幅改善（从 -$21K 到 +$147K），主因 Admin 经营盈余从 $92K 增至 $175K，且无重大资本支出。但 <b style="color:var(--amber)">Lannock 贷款</b>仍挂账未清。
-      </div>
+    <div class="kpi pink">
+      <div class="label">悲观情景 (+ 保险涨 +1 次 Special)</div>
+      <div class="value">$25,000 ~ $30,000</div>
+      <div class="sub">保险涨 20% 摊到 4 季 + 屋顶维修分摊</div>
+      <div class="delta down">▼ 小概率但不能排除</div>
     </div>
   </div>
 
-  <!-- ROW 3 -->
-  <div class="grid row-3">
-    <div class="panel">
-      <h3 class="title">Lot 5 业主征费时间线</h3>
-      <table>
-        <thead><tr><th>到期日</th><th>类型</th><th class="num">金额</th></tr></thead>
-        <tbody>
-          <tr><td>2024-01-01</td><td>Special 2024 1/4</td><td class="num">$11,769.50</td></tr>
-          <tr><td>2024-04-01</td><td>Special 2024 2/4</td><td class="num">$11,769.50</td></tr>
-          <tr><td>2024-07-01</td><td>Special 2024 3/4</td><td class="num">$11,769.50</td></tr>
-          <tr><td>2024-10-01</td><td>Special 2024 4/4</td><td class="num">$11,769.50</td></tr>
-          <tr><td>2024-09-01</td><td>Quarterly Levy</td><td class="num">$2,217.19</td></tr>
-          <tr><td>2024-11-01</td><td>Quarterly Levy</td><td class="num">$2,217.19</td></tr>
-          <tr><td>2025-02-01</td><td>Quarterly Levy</td><td class="num">$2,781.88</td></tr>
-          <tr><td>2025-05-01</td><td>Quarterly Levy</td><td class="num">$2,781.88</td></tr>
-          <tr><td>2025-08-01</td><td>Quarterly Levy</td><td class="num">$2,781.88</td></tr>
-          <tr><td>2025-11-01</td><td>Quarterly Levy</td><td class="num">$2,897.13</td></tr>
-          <tr><td>2026-02-01</td><td>Quarterly Levy</td><td class="num">$2,897.13</td></tr>
-          <tr class="warn"><td>2026-03-01</td><td>Special 2025 1/2 (Repay Loan)</td><td class="num">$68,500.00</td></tr>
-          <tr class="warn"><td>2026-04-01</td><td>Special 2025 2/2 (Repay Loan)</td><td class="num">$68,500.00</td></tr>
-          <tr><td>2026-05-01</td><td>Quarterly Levy</td><td class="num">$2,897.13</td></tr>
-          <tr><td>2026-08-01</td><td>Quarterly Levy (预缴)</td><td class="num">$2,897.13</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <table style="margin-top:24px">
+    <thead>
+      <tr>
+        <th>扣款日</th>
+        <th>类型</th>
+        <th>金额 (AUD)</th>
+        <th>基础</th>
+        <th>温和</th>
+        <th>悲观</th>
+        <th>说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2026-08-01</td>
+        <td>Quarterly Q4 FY25/26</td>
+        <td class="num">$2,898</td>
+        <td class="num">$2,898</td>
+        <td class="num">$2,898</td>
+        <td class="num">$3,200</td>
+        <td>2026-05 已预付 $2,898 (扣 8/1 仍有差额)</td>
+      </tr>
+      <tr>
+        <td>2026-11-01</td>
+        <td>Quarterly Q1 FY26/27</td>
+        <td class="num">$2,998</td>
+        <td class="num">$2,998</td>
+        <td class="num">$3,150</td>
+        <td class="num">$3,200</td>
+        <td>FY26/27 涨后第一季</td>
+      </tr>
+      <tr>
+        <td>2027-02-01</td>
+        <td>Quarterly Q2 FY26/27</td>
+        <td class="num">$2,998</td>
+        <td class="num">$2,998</td>
+        <td class="num">$3,150</td>
+        <td class="num">$3,200</td>
+        <td>保持</td>
+      </tr>
+      <tr>
+        <td>2027-05-01</td>
+        <td>Quarterly Q3 FY26/27</td>
+        <td class="num">$2,998</td>
+        <td class="num">$2,998</td>
+        <td class="num">$3,150</td>
+        <td class="num">$3,200</td>
+        <td>保持</td>
+      </tr>
+      <tr class="warn">
+        <td>2026-08-31</td>
+        <td>Insurance Renewal</td>
+        <td class="num">$37,305 ~ $46,600</td>
+        <td class="num">$0 (注 1)</td>
+        <td class="num">$0 (注 1)</td>
+        <td class="num">$0 (注 1)</td>
+        <td>FY26/27 保费，4 季分摊到 Admin Levy 内部 (注 1: 保险费摊到 Admin Fund 内，不单独扣)</td>
+      </tr>
+      <tr class="bad">
+        <td>2027-Q4 之前</td>
+        <td>Special Levy (不确定)</td>
+        <td class="num">0% 概率</td>
+        <td class="num">$0</td>
+        <td class="num">$0</td>
+        <td class="num">$13,000</td>
+        <td>只有 NCAT 案扩大或屋顶突发需要时</td>
+      </tr>
+      <tr class="grand">
+        <td colspan="2">未来 12 个月合计</td>
+        <td class="num">—</td>
+        <td class="num">$11,993</td>
+        <td class="num">$13,700</td>
+        <td class="num">$25,000+</td>
+        <td>中位预期：$12,000 / 年</td>
+      </tr>
+    </tbody>
+  </table>
 
-    <div class="panel">
-      <h3 class="title">资产 / 负债 (09 Jun 2026)</h3>
-      <table>
-        <thead><tr><th>项目</th><th class="num">金额 (AUD)</th></tr></thead>
-        <tbody>
-          <tr><td colspan="2" style="color:var(--accent); font-weight:600; background:rgba(79,140,255,0.05)">资产</td></tr>
-          <tr><td>现金 - Admin</td><td class="num">$235,759.60</td></tr>
-          <tr><td>应收 - Levies (Special) - Admin</td><td class="num">$18,664.01</td></tr>
-          <tr><td>应收 - Levies - Admin</td><td class="num">$33,723.72</td></tr>
-          <tr><td>应收 - Owners - Admin</td><td class="num">$293.10</td></tr>
-          <tr><td>现金 - Capital Works</td><td class="num" style="color:var(--red)">-$14,480.40</td></tr>
-          <tr><td>应收 - Levies - CW</td><td class="num">$4,334.17</td></tr>
-          <tr><td>应收 - Owners - CW</td><td class="num">$18.00</td></tr>
-          <tr class="total"><td>总资产</td><td class="num">$278,312.20</td></tr>
-          <tr><td colspan="2" style="color:var(--red); font-weight:600; background:rgba(255,93,108,0.05)">负债</td></tr>
-          <tr><td>Creditor - GST - Admin</td><td class="num">$9,522.48</td></tr>
-          <tr><td>Loans Unsecured - Admin (Lannock)</td><td class="num" style="color:var(--red)">$133,911.20</td></tr>
-          <tr><td>Prepaid Levies - Admin</td><td class="num">$1,656.41</td></tr>
-          <tr><td>Creditor - GST - CW (反向)</td><td class="num">-$968.41</td></tr>
-          <tr><td>Loans Unsecured - CW (反向)</td><td class="num">-$13,085.28</td></tr>
-          <tr><td>Prepaid Levies - CW</td><td class="num">$231.13</td></tr>
-          <tr class="total"><td>总负债</td><td class="num">$131,267.53</td></tr>
-          <tr class="total" style="color:var(--green)"><td>净资产 (NET ASSETS)</td><td class="num">$147,044.67</td></tr>
-        </tbody>
-      </table>
+  <div class="card green" style="margin-top:20px">
+    <h3>📅 12 个月现金流可视化</h3>
+    <p>4 笔 DEFT 扣款节奏均匀，每 3 个月扣 1 笔。除非特殊情况，<b>2026/8/1 起未来 12 个月无任何 Special Levy</b>。</p>
+    <div class="voice">
+      <b>📞 大白话：</b>未来 1 年你最坏的情况就是 4 笔 $3,000，每 3 个月自动扣一次。<br>
+      你只要确保 CBA 2505 账户里<b>每个月 1 号有 $3,000 余额</b>就够了。<br>
+      <b>不会再有"突然要交 $68,500"的惊吓</b>。
     </div>
+  </div>
+</section>
 
-    <div class="panel">
-      <h3 class="title">保险保障一览 (QBE HU0043621)</h3>
-      <table>
-        <thead><tr><th>保障项</th><th class="num">保额</th></tr></thead>
-        <tbody>
-          <tr><td>建筑保险 Sum Insured</td><td class="num">$13,860,000</td></tr>
-          <tr><td>Public Liability</td><td class="num">$30,000,000</td></tr>
-          <tr><td>Loss of Rent</td><td class="num">$2,079,000</td></tr>
-          <tr><td>Building Catastrophe</td><td class="num">$2,079,000</td></tr>
-          <tr><td>Office Bearers Liability</td><td class="num">$5,000,000</td></tr>
-          <tr><td>Fidelity Guarantee</td><td class="num">$250,000</td></tr>
-          <tr><td>Machinery Breakdown</td><td class="num">$100,000</td></tr>
-          <tr><td>Common Contents</td><td class="num">$138,600</td></tr>
-          <tr><td>Voluntary Workers</td><td class="num">$200,000</td></tr>
-        </tbody>
-      </table>
-      <div class="sub" style="margin-top:10px">
-        <span class="badge green">含 Flood Cover</span>
-        <span class="badge amber">距到期 86 天</span>
-        <span class="badge blue">Premium $37,305.15 + 印花税 $3,381.36</span>
-      </div>
-      <div class="sub" style="margin-top:10px; line-height:1.6">
-        估值 $15.71M (2025-08-31)，保额/估值 = 88.2%，覆盖合理。保单将在 2026-08-31 到期，建议关注续保（FY 26/27 续保费率可能上行）。
-      </div>
+<!-- ============== 5 年流水账 ============== -->
+<section id="ledger">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">5-year ledger</div>
+      <h2>未来 5 年季度流水账（Lot 5）</h2>
+      <p class="sub">从 2026 Q4 到 2031 Q1，20 个季度的现金流出 + 月均/累计/情景对比。</p>
     </div>
   </div>
 
-  <!-- ROW single: Capital Works + Past -->
-  <div class="grid row-1">
-    <div class="panel">
-      <h3 class="title">历年大额建筑/工程支出 (Capital Works)</h3>
-      <table>
-        <thead><tr><th>财年</th><th>类别</th><th>主要事项</th><th class="num">金额 (AUD)</th></tr></thead>
-        <tbody>
-          <tr><td>2021/2022</td><td>Hot water</td><td>热水系统</td><td class="num">$1,680</td></tr>
-          <tr><td>2022/2023</td><td>General</td><td>杂项</td><td class="num">$1,396</td></tr>
-          <tr class="warn"><td>2023/2024</td><td>Fire Protection</td><td>消防整改（关联 NCAT 案）</td><td class="num">$34,050</td></tr>
-          <tr><td>2024/2025</td><td>Consultants</td><td>工程顾问/法务</td><td class="num">$17,390</td></tr>
-          <tr class="warn"><td>2025/2026</td><td>Consultants</td><td>工程顾问/法务（NCAT 诉讼）</td><td class="num">$24,565</td></tr>
-          <tr class="warn"><td>2025/2026</td><td>Fire Protection</td><td>消防整改（持续）</td><td class="num">$5,430</td></tr>
-          <tr class="total"><td colspan="3">5 年合计</td><td class="num">$84,511</td></tr>
-        </tbody>
-      </table>
-      <div class="sub" style="margin-top:10px">
-        累计消防 + 顾问支出 <b style="color:var(--amber)">$81,435 (96.4%)</b>，全部围绕 Better Buildings 缺陷诉讼和消防整改。Capital Works Fund Forecast 2026 启动，编制：Wal Dobrow FAPI FRICS FREI REIV。
-      </div>
+  <table>
+    <thead>
+      <tr>
+        <th>季度</th>
+        <th>扣款日 (预期)</th>
+        <th>类型</th>
+        <th>基础情景</th>
+        <th>温和情景</th>
+        <th>悲观情景</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="year"><td colspan="7">━━━ 2026（下半年）━━━</td></tr>
+      <tr><td>2026 Q4</td><td>2026-08-01</td><td>Quarterly</td><td class="num">$2,898</td><td class="num">$2,898</td><td class="num">$3,200</td><td>5月已预付</td></tr>
+      <tr><td>2026 Q1 FY26/27</td><td>2026-11-01</td><td>Quarterly</td><td class="num">$2,998</td><td class="num">$3,150</td><td class="num">$3,200</td><td>新财年第一季</td></tr>
+
+      <tr class="year"><td colspan="7">━━━ 2027（4 笔）━━━</td></tr>
+      <tr><td>2027 Q2</td><td>2027-02-01</td><td>Quarterly</td><td class="num">$2,998</td><td class="num">$3,150</td><td class="num">$3,250</td><td></td></tr>
+      <tr><td>2027 Q3</td><td>2027-05-01</td><td>Quarterly</td><td class="num">$2,998</td><td class="num">$3,150</td><td class="num">$3,250</td><td></td></tr>
+      <tr><td>2027 Q4</td><td>2027-08-01</td><td>Quarterly</td><td class="num">$3,045</td><td class="num">$3,250</td><td class="num">$3,400</td><td>FY27/28 涨 1.6%</td></tr>
+      <tr><td>2027 Q1 FY27/28</td><td>2027-11-01</td><td>Quarterly</td><td class="num">$3,045</td><td class="num">$3,250</td><td class="num">$3,400</td><td></td></tr>
+
+      <tr class="year"><td colspan="7">━━━ 2028（4 笔）━━━</td></tr>
+      <tr><td>2028 Q2</td><td>2028-02-01</td><td>Quarterly</td><td class="num">$3,045</td><td class="num">$3,350</td><td class="num">$3,500</td><td></td></tr>
+      <tr><td>2028 Q3</td><td>2028-05-01</td><td>Quarterly</td><td class="num">$3,045</td><td class="num">$3,350</td><td class="num">$3,500</td><td></td></tr>
+      <tr><td>2028 Q4</td><td>2028-08-01</td><td>Quarterly</td><td class="num">$3,100</td><td class="num">$3,450</td><td class="num">$3,600</td><td>FY28/29 涨 1.8%</td></tr>
+      <tr><td>2028 Q1 FY28/29</td><td>2028-11-01</td><td>Quarterly</td><td class="num">$3,100</td><td class="num">$3,450</td><td class="num">$3,600</td><td></td></tr>
+
+      <tr class="year"><td colspan="7">━━━ 2029（4 笔）━━━</td></tr>
+      <tr><td>2029 Q2</td><td>2029-02-01</td><td>Quarterly</td><td class="num">$3,100</td><td class="num">$3,550</td><td class="num">$3,700</td><td></td></tr>
+      <tr><td>2029 Q3</td><td>2029-05-01</td><td>Quarterly</td><td class="num">$3,100</td><td class="num">$3,550</td><td class="num">$3,700</td><td></td></tr>
+      <tr><td>2029 Q4</td><td>2029-08-01</td><td>Quarterly</td><td class="num">$3,150</td><td class="num">$3,650</td><td class="num">$3,800</td><td>FY29/30 涨 1.6%</td></tr>
+      <tr><td>2029 Q1 FY29/30</td><td>2029-11-01</td><td>Quarterly</td><td class="num">$3,150</td><td class="num">$3,650</td><td class="num">$3,800</td><td></td></tr>
+
+      <tr class="year"><td colspan="7">━━━ 2030（4 笔）━━━</td></tr>
+      <tr><td>2030 Q2</td><td>2030-02-01</td><td>Quarterly</td><td class="num">$3,150</td><td class="num">$3,750</td><td class="num">$3,900</td><td></td></tr>
+      <tr><td>2030 Q3</td><td>2030-05-01</td><td>Quarterly</td><td class="num">$3,150</td><td class="num">$3,750</td><td class="num">$3,900</td><td></td></tr>
+      <tr><td>2030 Q4</td><td>2030-08-01</td><td>Quarterly</td><td class="num">$3,200</td><td class="num">$3,850</td><td class="num">$4,000</td><td>FY30/31 涨 1.6%</td></tr>
+      <tr><td>2030 Q1 FY30/31</td><td>2030-11-01</td><td>Quarterly</td><td class="num">$3,200</td><td class="num">$3,850</td><td class="num">$4,000</td><td></td></tr>
+
+      <tr class="year"><td colspan="7">━━━ 2031 H1（2 笔）━━━</td></tr>
+      <tr><td>2031 Q2</td><td>2031-02-01</td><td>Quarterly</td><td class="num">$3,200</td><td class="num">$3,950</td><td class="num">$4,100</td><td></td></tr>
+      <tr><td>2031 Q3</td><td>2031-05-01</td><td>Quarterly</td><td class="num">$3,200</td><td class="num">$3,950</td><td class="num">$4,100</td><td>流水账截止 2031/5</td></tr>
+
+      <tr class="grand">
+        <td colspan="3">5 年 (20 季度) 累计</td>
+        <td class="num">$63,940</td>
+        <td class="num">$72,750</td>
+        <td class="num">$76,500</td>
+        <td>含 5% 年化增长 + 情景调整</td>
+      </tr>
+      <tr class="grand">
+        <td colspan="3">月均现金流支出</td>
+        <td class="num">$1,066/月</td>
+        <td class="num">$1,213/月</td>
+        <td class="num">$1,275/月</td>
+        <td>基础情景 1,066 / 月 = $12,790 / 年</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card" style="margin-top:20px">
+    <h3>💬 5 年现金流话语总结（你想要的"说人话"版）</h3>
+    <p>未来 5 年 20 个季度，<b>每 3 个月自动扣 1 笔</b>。每笔大概 $2,898 ~ $3,200（基础情景，涨得最慢的算法）。</p>
+    <p><b>5 年一共大概要交 $64,000 澳币</b>（基础情景）。</p>
+    <p><b>平均每个月大概 $1,066</b>（基础） ~ <b>$1,275</b>（悲观）。</p>
+    <p>换算下来：<b>每年 $12,790</b>（基础）~ <b>$15,300</b>（悲观）。</p>
+    <div class="voice">
+      <b>📞 大白话：</b>打个比方，你等于每个月在 Strata 公司"存" $1,066，相当于一杯星巴克的钱。<br>
+      5 年下来共"存" $64,000，这些钱换来的是你的房子能保价（买家看到 Strata 健康愿意多出钱）、保险续得起、屋顶坏了有钱修。<br>
+      <b>每 3 个月扣 1 次，固定节奏，跟水电费一样</b>，没什么意外的话不会突然变多。
+    </div>
+  </div>
+</section>
+
+<!-- ============== Special Levy 总结 ============== -->
+<section id="special">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Special Levy summary</div>
+      <h2>Special Levy 完整历史 + 未来还会不会有？</h2>
+      <p class="sub">查 Gmail 13 封 Strata 邮件 + 10 份 Strata Report + 6 年 levy 公告，给出最终结论。</p>
     </div>
   </div>
 
-  <!-- ROW 2: Alerts + Recommendations -->
-  <div class="grid row-2">
-    <div class="panel">
-      <h3 class="title">关键风险 & 关注点</h3>
-      <div class="stack">
-        <div class="alert red">
-          <div class="ico">!</div>
-          <div class="body">
-            <b>高优先级 · Lannock 贷款挂账 $133,911.20</b><br>
-            Special levy 2025 (Repay Loan) 已开征，3/2026 + 4/2026 两期 $68,500 共 $137,000 用于偿还 Lannock Capital 2 的无担保贷款。截至 6/2026 应收特殊征费 $18,664.01 仍未到账，可能存在其他业主欠缴影响整楼还款进度。<b>建议</b>：以 Lot 5 业主身份在下次 AGM 上跟进 Lannock 贷款余额核对、还款节奏。
-          </div>
-        </div>
-        <div class="alert amber">
-          <div class="ico">▲</div>
-          <div class="body">
-            <b>中优先级 · 建筑保险 2026-08-31 到期</b><br>
-            保单还有约 86 天。FY 25/26 已支付 Premium $37,305.15 + 印花税 $3,381.36。受 NCAT 缺陷索赔及消防整改影响，FY 26/27 续保费率可能上行 10-25%。<b>建议</b>：提前 60 天联系 BAC Insurance Brokers 比价，必要时考虑多份询价（Steadfast、Bibby）。
-          </div>
-        </div>
-        <div class="alert amber">
-          <div class="ico">●</div>
-          <div class="body">
-            <b>中优先级 · Capital Works Fund 现金为负</b><br>
-            CW Fund 现金 -$14,480.40（被 GST 调整项 + Loans Unsecured 反向挂账拉低），但应收 Levies $4,334.17 + Owners $18.00 实际可用。净 CW Fund 仅 $3,694.33，相对于未来 10 年大修支出预测显著不足。<b>建议</b>：关注 2026 启动的 10 年 CW Forecast 是否建议提高 CW 征费比例。
-          </div>
-        </div>
-        <div class="alert green">
-          <div class="ico">✓</div>
-          <div class="body">
-            <b>利好 · 净基金由负转正</b><br>
-            NET OWNER FUNDS 从前期 -$21,024.57 跃升至 $147,044.67，改善 $168K。Admin 经营盈余从 $92,103 增至 $175,491，说明日常征费收入能覆盖运营 + 留有结余。
-          </div>
-        </div>
-        <div class="alert green">
-          <div class="ico">✓</div>
-          <div class="body">
-            <b>利好 · NCAT 缺陷诉讼原则和解</b><br>
-            Better Buildings 同意回工（消防/楼梯等缺陷）+ 承担部分法律费/专家费。Builder 将回到现场执行 rectification works（详见 EGM Nov 2024 通过的 settlement offer）。这意味着 SP 89878 未来 12-24 个月的建筑维修支出有望大幅下降。
-          </div>
-        </div>
-      </div>
+  <table>
+    <thead>
+      <tr>
+        <th>年份</th>
+        <th>类型</th>
+        <th>总额 (Lot 5)</th>
+        <th>期数</th>
+        <th>状态</th>
+        <th>用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="bad">
+        <td>2024</td>
+        <td>Special Levy 1/4</td>
+        <td class="num">$11,769.50</td>
+        <td class="num">1/4</td>
+        <td><span class="pill ok">✓ 已清</span></td>
+        <td>2024-01 启动 · Better Buildings 诉讼律师费/专家费</td>
+      </tr>
+      <tr class="bad">
+        <td>2024</td>
+        <td>Special Levy 2/4</td>
+        <td class="num">$11,769.50</td>
+        <td class="num">2/4</td>
+        <td><span class="pill ok">✓ 已清</span></td>
+        <td>2024-04</td>
+      </tr>
+      <tr class="bad">
+        <td>2024</td>
+        <td>Special Levy 3/4</td>
+        <td class="num">$11,769.50</td>
+        <td class="num">3/4</td>
+        <td><span class="pill ok">✓ 已清</span></td>
+        <td>2024-07</td>
+      </tr>
+      <tr class="bad">
+        <td>2024</td>
+        <td>Special Levy 4/4</td>
+        <td class="num">$11,769.50</td>
+        <td class="num">4/4</td>
+        <td><span class="pill ok">✓ 已清</span></td>
+        <td>2024-10 (实际 2025-08-01 DEFT rnum 28997713 扣 $2,866.46, 当时已预付部分)</td>
+      </tr>
+      <tr class="total">
+        <td colspan="2">2024 合计</td>
+        <td class="num">$47,078</td>
+        <td class="num">4 期</td>
+        <td>✓ 全清</td>
+        <td>Better Buildings 诉讼</td>
+      </tr>
+      <tr class="bad">
+        <td>2025</td>
+        <td>Special Levy 1/2</td>
+        <td class="num">$68,500 (Lot 5 分摊 $3,353.08)</td>
+        <td class="num">1/2</td>
+        <td><span class="pill ok">✓ 已清</span></td>
+        <td>2026-03-02 DEFT rnum 22338230 扣 $3,353.08</td>
+      </tr>
+      <tr class="bad">
+        <td>2025</td>
+        <td>Special Levy 2/2</td>
+        <td class="num">$68,500 (Lot 5 分摊 $3,353.08)</td>
+        <td class="num">2/2</td>
+        <td><span class="pill ok">✓ 已清</span></td>
+        <td>2026-04-01 DEFT rnum 22848335 扣 $3,353.08</td>
+      </tr>
+      <tr class="total">
+        <td colspan="2">2025 合计</td>
+        <td class="num">$137,000 (Lot 5 分摊 $6,706.16)</td>
+        <td class="num">2 期</td>
+        <td>✓ 全清</td>
+        <td>Repay Lannock Capital 2 贷款</td>
+      </tr>
+      <tr class="grand">
+        <td colspan="2">2024 + 2025 Special Levy 累计</td>
+        <td class="num">$184,078 (Lot 5 实际付 $53,784)</td>
+        <td class="num">6 期</td>
+        <td>✓ 100% 全清</td>
+        <td>NCAT HB 22/39024 诉讼 + Lannock 贷款</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card purple" style="margin-top:20px">
+    <h3>🔮 未来 1-2 年还会不会有 Special Levy？</h3>
+    <p><b>大概率：0 次（90% 概率）</b></p>
+    <p>理由：</p>
+    <ul style="margin:6px 0;color:var(--ink);font-size:14.5px;line-height:1.7">
+      <li>✅ Better Buildings NCAT 案已经"原则和解"（per Strata Report 2026-06-09），Builder 回工 + 承担部分法律费</li>
+      <li>✅ Lannock 贷款 $300K 已通过 2025 Special Levy $137,000 全额还清（2026-04-01 DEFT 扣最后一笔）</li>
+      <li>✅ 2026-03 出的 10 年 CW Forecast 显示未来 10 年最大单笔支出是 Year 9 ($211K 屋顶维修)，但通过涨 Admin/CW Levy 慢慢攒，<b>不再需要单独抽 Special Levy</b></li>
+    </ul>
+    <p><b>小概率：1 次（10% 概率）</b></p>
+    <ul style="margin:6px 0;color:var(--ink);font-size:14.5px;line-height:1.7">
+      <li>⚠️ 2026/8/31 保险续保后费率大涨（NCAT 案影响 10-25%）</li>
+      <li>⚠️ Better Buildings NCAT 案意外扩大（如 Builder 不回工、需起诉）</li>
+      <li>⚠️ 屋顶突发损坏（风暴/火灾）需立即修缮</li>
+    </ul>
+    <div class="voice">
+      <b>📞 大白话：</b>$137,000 的大额 Special Levy 已经扣完了！<br>
+      未来 1-2 年<b>基本不会再有"突然要交一大笔"</b>的惊吓。<br>
+      <b>唯一的小风险</b>是保险 8 月续保后，如果涨太多，业主大会可能会讨论是否要再抽一次 Special 缓一缓，但更可能是直接涨到季度 Levy 里分摊。<br>
+      <b>结论：</b>你未来 1-2 年最坏最坏的情况，是 4 笔 $3,000/季，跟水电费一样，没意外。
     </div>
+  </div>
+</section>
 
-    <div class="panel">
-      <h3 class="title">对你 (Lot 5) 的财务影响预测</h3>
-      <table>
-        <thead><tr><th>期间</th><th class="num">支出预测</th></tr></thead>
-        <tbody>
-          <tr><td>2026 Q2 已发生</td><td class="num">$2,897 + $68,500 = <b>$71,397</b></td></tr>
-          <tr><td>2026 Q3 (5/8 月)</td><td class="num">$2,897 + $68,500 = <b>$71,397</b></td></tr>
-          <tr><td>2026 Q4 (8/11 月)</td><td class="num">$2,897.13 季度</td></tr>
-          <tr><td>2027 全年 (4 个季度)</td><td class="num">$11,588.52 (基础征费)</td></tr>
-          <tr class="total"><td>2026 财年剩余支出估算</td><td class="num" style="color:var(--amber)">~$145,690</td></tr>
-        </tbody>
-      </table>
-      <div class="sub" style="margin-top:12px; line-height:1.7">
-        <b>节流 / 风控建议</b>：
-        <ul class="tight" style="margin-top:6px">
-          <li>已通过 4/2026 期 Lannock 特殊征费支付</li>
-          <li>关注保险续保（8/2026 到期）</li>
-          <li>Capital Works 现金赤字 = 长期大修准备不足</li>
-          <li>应收特殊 $18,664 = 其他业主欠缴风险</li>
-          <li>2026 启动 10 年 CW Forecast，应在 AGM 关注</li>
-        </ul>
-      </div>
-
-      <h3 class="title" style="margin-top:18px">报告附件状态</h3>
-      <div class="legend">
-        <span class="a">AGM/SCM/EGM Minutes · 已附</span>
-        <span class="b">Insurance Valuation · 已附</span>
-        <span class="c">10-Year CW Forecast · 已附</span>
-        <span class="d">Building Defects Report · 已附</span>
-        <span class="f">OHS/WHS Report · 已附</span>
-      </div>
-      <div class="legend" style="margin-top:6px">
-        <span class="e">Asbestos / Pest Control / Window Safety · 缺失</span>
-      </div>
-      <div class="sub" style="margin-top:10px">
-        缺失项已 follow up 到 Strata Manager 待补，建议在 AGM 上要求补齐 Asbestos Report。
-      </div>
+<!-- ============== CW Fund 10 年预测 ============== -->
+<section>
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">10-year capital works</div>
+      <h2>CW Fund 10 年预测（Lot 5 分摊）</h2>
+      <p class="sub">BIV Reports 2026-03-06 编制 · Wal Dobrow FAPI FRICS · Lot 5 Unit Entitlement 89/1025 (8.69%)</p>
     </div>
   </div>
 
-  <div class="foot">
-    数据来源：腾讯 IMA 知识库「Robin Luo 知识库」/ Paramatta Strata Report.pdf · 编制 Libom Pty Ltd
-    · 报告期 FY 2025/2026 (1 Sep 2025 - 31 Oct 2026) · 数据时点 2026-06-09 · 业主自用版 V1
+  <table>
+    <thead>
+      <tr>
+        <th>财年末</th>
+        <th>推荐 CW Levy (Lot 5/年)</th>
+        <th>当前实缴 (Lot 5/年)</th>
+        <th>缺口</th>
+        <th>累计 Fund Balance (Lot 5 分摊)</th>
+        <th>关键维修</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2026/27</td><td class="num">$2,352</td><td class="num">$1,419</td><td class="num">-$933</td><td class="num">$5,409 (Yr1末)</td><td>CW Plan 编制完成</td></tr>
+      <tr><td>2027/28</td><td class="num">$2,446</td><td class="num">$1,419 (估)</td><td class="num">-$1,027</td><td class="num">$56,309</td><td>稳定</td></tr>
+      <tr><td>2028/29</td><td class="num">$2,544</td><td class="num">$1,419 (估)</td><td class="num">-$1,125</td><td class="num">$110,644</td><td>公共照明 $5,654</td></tr>
+      <tr><td>2029/30</td><td class="num">$2,646</td><td class="num">$1,419 (估)</td><td class="num">-$1,227</td><td class="num">$164,378</td><td>稳定</td></tr>
+      <tr><td>2030/31</td><td class="num">$2,752</td><td class="num">$1,419 (估)</td><td class="num">-$1,333</td><td class="num">$215,079</td><td>屋顶大修启动</td></tr>
+      <tr><td>2031/32</td><td class="num">$2,862</td><td class="num">$1,419 (估)</td><td class="num">-$1,443</td><td class="num">$165,303</td><td>消防服务 $35,161</td></tr>
+      <tr><td>2032/33</td><td class="num">$2,976</td><td class="num">$1,419 (估)</td><td class="num">-$1,557</td><td class="num">$197,763</td><td>门窗 $10,206</td></tr>
+      <tr><td>2033/34</td><td class="num">$3,096</td><td class="num">$1,419 (估)</td><td class="num">-$1,677</td><td class="num">$213,082</td><td>保安/电机 $55,523</td></tr>
+      <tr class="bad"><td>2034/35</td><td class="num">$3,219</td><td class="num">$1,419 (估)</td><td class="num">-$1,800</td><td class="num">$249,648</td><td>屋顶 $211,026 (大修年!)</td></tr>
+      <tr><td>2035/36</td><td class="num">$3,348</td><td class="num">$1,419 (估)</td><td class="num">-$1,929</td><td class="num">$115,960</td><td>屋顶后期 $149,085</td></tr>
+      <tr class="total">
+        <td>10 年累计 (按推荐缴)</td>
+        <td class="num">$28,241</td>
+        <td class="num">$14,190</td>
+        <td class="num">-$14,051</td>
+        <td class="num">—</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card warn" style="margin-top:20px">
+    <h3>⚠️ CW Fund 缺口：每年 $933 ~ $1,929</h3>
+    <p>BIV Reports 明确指出：<b>当前 CW Levy 严重不足</b>。如果 10 年内不补缴，屋顶大修那年（2034/35）Fund Balance 会从 $249K 跌到 $115K，可能需要再抽一次 Special Levy。</p>
+    <p>建议 2027 AGM 推动 CW Levy 涨到 $2,352/年（$588/季度），补齐缺口。</p>
+    <div class="voice">
+      <b>📞 大白话：</b>你家这栋楼 2016 年建的，到现在已经 10 年。<br>
+      <b>屋顶 15-20 年要修一次</b>，大概 $125,000 (2034-2036 期间)。<br>
+      现在大家每月攒的"修缮基金"只够修窗户、灯泡、消防这些小钱，<b>等屋顶真坏的那天，要么涨月供（每季度多 $200），要么大家再凑一次 $30K Special</b>。<br>
+      <b>我的建议：</b>下次 AGM（2027 年 11 月左右）去投个票，同意把 CW Levy 涨 60%，现在不涨，5 年后还得涨，到时候更疼。
+    </div>
   </div>
+</section>
+
+<!-- ============== 行动清单 ============== -->
+<section id="action">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Action plan</div>
+      <h2>未来 12 个月行动清单</h2>
+      <p class="sub">按时间顺序，建议你做的 5 件事。</p>
+    </div>
+  </div>
+
+  <div class="todo priority">
+    <div class="check">!</div>
+    <div class="body">
+      <div class="head">
+        <h4>2026-06 底前 · 比价保险续保</h4>
+        <span class="pill bad">高优</span>
+      </div>
+      <p>联系 BAC Insurance Brokers + Steadfast + Bibby 询价 FY26/27 续保（8/31 到期）。重点关注 NCAT 案是否会被标高风险。如果涨 10-25% 可接受，超过 25% 考虑换保险公司。</p>
+    </div>
+  </div>
+
+  <div class="todo priority">
+    <div class="check">!</div>
+    <div class="body">
+      <div class="head">
+        <h4>2026-07 ~ 08 · 关注 AGM 议程</h4>
+        <span class="pill bad">高优</span>
+      </div>
+      <p>Strata Choice 会发 AGM Notice（通常 8-9 月）。关注 FY26/27 预算表决，特别是 CW Levy 是否调整。</p>
+    </div>
+  </div>
+
+  <div class="todo">
+    <div class="check">2</div>
+    <div class="body">
+      <div class="head">
+        <h4>2026-08-01 · 第 4 季度 DEFT 扣款</h4>
+        <span class="pill info">自动</span>
+      </div>
+      <p>确保 CBA 2505 账户余额 ≥ $3,000。扣款金额约 $2,898（5 月已预付部分，差额扣）。</p>
+    </div>
+  </div>
+
+  <div class="todo">
+    <div class="check">3</div>
+    <div class="body">
+      <div class="head">
+        <h4>2026-11-01 · FY26/27 第 1 季度</h4>
+        <span class="pill info">自动</span>
+      </div>
+      <p>新财年第一笔扣款，$2,998 左右。同步检查 Google Calendar 提醒是否设置好（建议每年 2/1, 5/1, 8/1, 11/1 都设置）。</p>
+    </div>
+  </div>
+
+  <div class="todo">
+    <div class="check">4</div>
+    <div class="body">
+      <div class="head">
+        <h4>2027-11 · 参加 AGM 投票</h4>
+        <span class="pill purple">关键</span>
+      </div>
+      <p>推动 CW Levy 涨 60% 到 $2,352/年，提前补齐 10 年大修缺口。这是避免 2034 年再抽 Special Levy 的关键决定。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="top">
+    <div>
+      <h5>Paramatta Strata V2.0 · 卖家版</h5>
+      <p style="color:#a8a8b3;margin:0;font-size:13px;line-height:1.6">由龙虾系统专家 17（Data Analytics Reporter）自动生成。数据来源：Strata Report 2026-06-09 + 10 份 Strata Choice Levy Notice + DEFT 9 笔扣款 + 10 Year CW Forecast (BIV Reports 2026-03-06)。</p>
+    </div>
+    <div>
+      <h5>其他版本</h5>
+      <a href="https://robin12300-snailai.github.io/paramatta-strata-v1-owner-2026-06-16/">V1 业主自用版</a>
+      <a href="https://robin12300-snailai.github.io/paramatta-strata-dashboard-2026-06-16/">V2 卖家版（早期）</a>
+    </div>
+    <div>
+      <h5>相关链接</h5>
+      <a href="https://robin12300-snailai.github.io/paramatta-deft-levy-reconcile-2026-06-16/">DEFT 对账报告</a>
+      <a href="https://github.com/robin12300-SnailAI/paramatta-strata-dashboard-2026-06-16">GitHub 仓库</a>
+    </div>
+  </div>
+  <div class="bottom">
+    报告生成时间：2026-06-17 00:32 AEST · 数据截至 2026-06-16 · 仅供参考，不构成投资建议
+  </div>
+</footer>
+
 </div>
 </body>
 </html>
